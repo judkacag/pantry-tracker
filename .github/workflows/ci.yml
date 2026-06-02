@@ -29,8 +29,3 @@ jobs:
         run: npm run build
         env:
           DATABASE_URL: file:./prisma/dev.db
-          SMTP_HOST: smtp.example.com
-          SMTP_PORT: 587
-          SMTP_USER: ci@example.com
-          SMTP_PASS: placeholder
-          NOTIFY_EMAIL: ci@example.com

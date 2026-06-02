@@ -43,7 +43,7 @@ function fmtLeft(iso: string) {
 
 function ExpiryLine({ iso }: { iso: string }) {
   const s = expiryStatus(iso);
-  const color = s === "expired" ? "#C0531F" : s === "orange" ? "#C4893A" : s === "amber" ? "#9A8050" : "#3A8048";
+  const color = s === "expired" ? "#C0531F" : s === "orange" ? "#C4893A" : s === "amber" ? "#6C6C74" : "#3A8048";
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 7, color, fontSize: 13, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap" }}>
       {fmtDate(iso)}
