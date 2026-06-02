@@ -57,9 +57,9 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
   );
 }
 
-function TextField({ label, required, value, onChange, placeholder, inputMode }: {
+function TextField({ label, required, value, onChange, onBlur, placeholder, inputMode }: {
   label: string; required?: boolean; value: string;
-  onChange: (v: string) => void; placeholder?: string;
+  onChange: (v: string) => void; onBlur?: () => void; placeholder?: string;
   inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 }) {
   const [focus, setFocus] = useState(false);
@@ -74,7 +74,8 @@ function TextField({ label, required, value, onChange, placeholder, inputMode }:
       }}>
         <input
           value={value} onChange={e => onChange(e.target.value)}
-          onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
+          onFocus={() => setFocus(true)}
+          onBlur={() => { setFocus(false); onBlur?.(); }}
           placeholder={placeholder} inputMode={inputMode}
           style={{ flex: 1, border: "none", outline: "none", background: "transparent", fontFamily: "'Jost', system-ui, sans-serif", fontSize: 16, color: "var(--ink)", minWidth: 0 }}
         />
@@ -193,12 +194,14 @@ export function ItemForm({
   initial,
   onSave,
   onScan,
+  onBarcodeLookup,
   lookupState,
 }: {
   mode: "add" | "edit";
   initial: FormState;
   onSave: (data: FormState) => Promise<void>;
   onScan?: () => void;
+  onBarcodeLookup?: (barcode: string) => void;
   lookupState?: "idle" | "loading" | "found" | "not-found";
 }) {
   const router = useRouter();
@@ -257,7 +260,7 @@ export function ItemForm({
 
         {error && <p style={{ margin: 0, fontSize: 13, color: "var(--red)" }}>{error}</p>}
 
-        <TextField label="Barcode" value={f.barcode} onChange={v => set("barcode", v)} placeholder="e.g. 4006381333931" inputMode="numeric" />
+        <TextField label="Barcode" value={f.barcode} onChange={v => set("barcode", v)} onBlur={() => f.barcode && onBarcodeLookup?.(f.barcode)} placeholder="e.g. 4006381333931" inputMode="numeric" />
         <TextField label="Name" required value={f.name} onChange={v => set("name", v)} placeholder="e.g. Chickpeas" />
         <TextField label="Brand" value={f.brand} onChange={v => set("brand", v)} placeholder="e.g. Alnatura" />
         <div>

@@ -106,6 +106,7 @@ export default function AddPage() {
       initial={form}
       onSave={onSave}
       onScan={startScanner}
+      onBarcodeLookup={lookupBarcode}
       lookupState={lookupState}
     />
   );

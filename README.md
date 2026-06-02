@@ -19,10 +19,12 @@ I kept throwing out food that had quietly expired at the back of the cupboard. I
 
 | Feature | Detail |
 |---|---|
-| **Barcode scan** | Point your phone camera at any product — name, brand, category, pack size, nutri-score and product photo are auto-filled from Open Food Facts |
+| **Barcode scan** | Point your phone camera at any product — details auto-fill from Open Food Facts |
+| **Rich product data** | Name, brand, category, packaging type, pack size, nutri-score, labels, and product photo — all pulled automatically and editable |
+| **Manual override** | Every field can be edited after scanning, or filled in entirely by hand if a product isn't in the database |
 | **Expiry tracking** | Colour-coded urgency groups: expired · expiring soon · use this month · plenty of time |
-| **Consume or delete** | Swipe left to reveal Used / Delete — deducts quantity when you have more than one |
-| **Search & filter** | Instant search + multi-select filter by urgency and category |
+| **Swipe actions** | Swipe left to mark as used or delete — deducts quantity when you have more than one |
+| **Search & filter** | Instant search + multi-select filter by urgency level and category |
 | **Group views** | Switch between Urgency, Category, and All items |
 | **PWA** | Install to your home screen — works like a native app, no App Store needed |
 
@@ -32,10 +34,10 @@ I kept throwing out food that had quietly expired at the back of the cupboard. I
 
 <img src="docs/architecture.svg" width="100%"/>
 
-Two zones:
-- **Your phone** — browser PWA with camera barcode scanning via `html5-qrcode`
-- **Next.js app** — API routes, SQLite database, all logic stays local
-- **External** — Open Food Facts (free, no key needed) for product data
+Three zones:
+- **Your phone** — browser PWA with camera barcode scanning (`html5-qrcode`) and manual entry fallback
+- **Next.js app** — API routes for items and product lookup, SQLite database, all logic stays local
+- **Open Food Facts** — free, open product database; returns name, brand, category, packaging type, pack size, nutri-score, dietary labels, and product photo. No API key required.
 
 ---
 
@@ -44,7 +46,7 @@ Two zones:
 | Layer | Choice | Why |
 |---|---|---|
 | Framework | [Next.js 16](https://nextjs.org) (App Router) | Full-stack in one repo, great PWA support |
-| Styling | Tailwind CSS + inline styles | Mobile-first, design-system driven |
+| Styling | Tailwind CSS + inline styles | Mobile-first, design-token driven |
 | Barcode | [html5-qrcode](https://github.com/mebjas/html5-qrcode) | Runs in the browser, no native app needed |
 | Product data | [Open Food Facts](https://world.openfoodfacts.org) | Free, open, strong EU coverage |
 | Database | SQLite via [Prisma v7](https://www.prisma.io) + libsql | Zero-config, file-based, easy to migrate |
@@ -73,7 +75,7 @@ npm install
 cp .env.example .env
 ```
 
-The only required variable is the database path — no external services needed.
+The only required variable is the database path — no external services or API keys needed.
 
 ```env
 DATABASE_URL="file:./prisma/dev.db"
@@ -91,7 +93,7 @@ npx prisma migrate dev
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). On mobile, connect to the same WiFi and use your machine's local IP — e.g. `https://192.168.0.41:3000`.
+Open [http://localhost:3000](http://localhost:3000). On mobile, connect to the same WiFi and open your machine's local IP — e.g. `https://192.168.0.41:3000`.
 
 > **Note:** Camera access for barcode scanning requires HTTPS. Run with `next dev --experimental-https` for mobile testing.
 
@@ -99,12 +101,17 @@ Open [http://localhost:3000](http://localhost:3000). On mobile, connect to the s
 
 ## Roadmap
 
-- [x] Barcode scan → Open Food Facts auto-fill (name, brand, category, pack size, nutri-score, photo)
+- [x] Barcode scan → Open Food Facts auto-fill
+- [x] Rich product data: name, brand, category, packaging, pack size, nutri-score, labels, photo
+- [x] Manual entry and field override after scanning
 - [x] Expiry tracking with colour-coded urgency groups
 - [x] Swipe to consume / delete with quantity deduction
 - [x] Search + filter by urgency and category
+- [x] Group views: urgency, category, all items
 - [x] PWA / installable on mobile
-- [ ] Fridge as a second storage location
+- [x] Pantry + fridge as separate locations
+- [ ] Photo / OCR scanning of expiry dates (so you don't have to type the date)
+- [ ] Shopping suggestions when stock is running low
 - [ ] Shared household access (multi-user)
 - [ ] Cloud deploy on Hetzner with Tailscale
 

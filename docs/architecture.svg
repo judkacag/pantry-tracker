@@ -1,86 +1,131 @@
-<svg viewBox="0 0 640 480" width="640" height="480" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+<svg viewBox="0 0 760 500" width="760" height="500" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', -apple-system, sans-serif">
 
-  <!-- Background zones -->
-  <rect x="10" y="10" width="160" height="460" rx="16" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
-  <text x="90" y="34" text-anchor="middle" font-size="11" font-weight="600" fill="#16a34a">YOUR PHONE</text>
-
-  <rect x="190" y="10" width="300" height="460" rx="16" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
-  <text x="340" y="34" text-anchor="middle" font-size="11" font-weight="600" fill="#2563eb">NEXT.JS APP</text>
-
-  <rect x="510" y="10" width="120" height="200" rx="16" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1.5"/>
-  <text x="570" y="34" text-anchor="middle" font-size="11" font-weight="600" fill="#7c3aed">EXTERNAL</text>
-
-  <!-- Phone -->
-  <rect x="28" y="55" width="124" height="56" rx="10" fill="white" stroke="#86efac" stroke-width="1.5"/>
-  <text x="90" y="79" text-anchor="middle" font-size="12" font-weight="600" fill="#15803d">Mobile browser</text>
-  <text x="90" y="96" text-anchor="middle" font-size="10" fill="#6b7280">PWA / Add to Home</text>
-
-  <rect x="28" y="135" width="124" height="48" rx="10" fill="white" stroke="#86efac" stroke-width="1.5"/>
-  <text x="90" y="156" text-anchor="middle" font-size="11" font-weight="600" fill="#15803d">📷 Camera</text>
-  <text x="90" y="173" text-anchor="middle" font-size="10" fill="#6b7280">html5-qrcode</text>
-
-  <!-- Pages -->
-  <rect x="208" y="55" width="128" height="56" rx="10" fill="white" stroke="#93c5fd" stroke-width="1.5"/>
-  <text x="272" y="77" text-anchor="middle" font-size="12" font-weight="600" fill="#1d4ed8">/ Inventory</text>
-  <text x="272" y="94" text-anchor="middle" font-size="10" fill="#6b7280">list · swipe · filter</text>
-
-  <rect x="352" y="55" width="128" height="56" rx="10" fill="white" stroke="#93c5fd" stroke-width="1.5"/>
-  <text x="416" y="77" text-anchor="middle" font-size="12" font-weight="600" fill="#1d4ed8">/add  /edit</text>
-  <text x="416" y="94" text-anchor="middle" font-size="10" fill="#6b7280">scan · form · save</text>
-
-  <!-- API Routes -->
-  <text x="340" y="148" text-anchor="middle" font-size="10" font-weight="600" fill="#64748b" letter-spacing="1">API ROUTES</text>
-
-  <rect x="208" y="158" width="128" height="44" rx="9" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.2"/>
-  <text x="272" y="178" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">GET/POST /items</text>
-  <text x="272" y="194" text-anchor="middle" font-size="10" fill="#3b82f6">PATCH · DELETE · PUT</text>
-
-  <rect x="352" y="158" width="128" height="44" rx="9" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.2"/>
-  <text x="416" y="178" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">GET /lookup</text>
-  <text x="416" y="194" text-anchor="middle" font-size="10" fill="#3b82f6">barcode → product info</text>
-
-  <!-- DB -->
-  <rect x="262" y="350" width="156" height="52" rx="10" fill="white" stroke="#93c5fd" stroke-width="1.5"/>
-  <text x="340" y="373" text-anchor="middle" font-size="12" font-weight="600" fill="#1d4ed8">SQLite (dev.db)</text>
-  <text x="340" y="390" text-anchor="middle" font-size="10" fill="#6b7280">Prisma v7 + libsql</text>
-
-  <!-- External -->
-  <rect x="526" y="55" width="88" height="44" rx="10" fill="white" stroke="#c4b5fd" stroke-width="1.5"/>
-  <text x="570" y="75" text-anchor="middle" font-size="11" font-weight="600" fill="#6d28d9">Open Food</text>
-  <text x="570" y="91" text-anchor="middle" font-size="10" fill="#6b7280">Facts API</text>
-
-  <rect x="526" y="115" width="88" height="44" rx="10" fill="white" stroke="#c4b5fd" stroke-width="1.5"/>
-  <text x="570" y="135" text-anchor="middle" font-size="11" font-weight="600" fill="#6d28d9">name · brand</text>
-  <text x="570" y="151" text-anchor="middle" font-size="10" fill="#6b7280">category · photo</text>
-
-  <!-- Arrows -->
+  <!-- Definitions -->
   <defs>
-    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+    <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
       <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
     </marker>
-    <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 z" fill="#22c55e"/>
+    <marker id="ag" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#2D5CB0"/>
     </marker>
-    <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 z" fill="#a78bfa"/>
+    <marker id="ap" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#7c3aed"/>
     </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="rgba(0,0,0,0.08)"/>
+    </filter>
   </defs>
 
-  <line x1="152" y1="83" x2="206" y2="83" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arr-green)"/>
-  <line x1="152" y1="159" x2="352" y2="83" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arr-green)" stroke-dasharray="5,3"/>
-  <line x1="272" y1="111" x2="272" y2="156" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="416" y1="111" x2="416" y2="156" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="480" y1="180" x2="524" y2="77" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arr-purple)"/>
-  <line x1="272" y1="202" x2="310" y2="348" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="416" y1="202" x2="370" y2="348" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+  <!-- Background: Phone -->
+  <rect x="12" y="12" width="148" height="476" rx="18" fill="#f0fdf8" stroke="#bbf7d0" stroke-width="1.5"/>
+  <text x="86" y="36" text-anchor="middle" font-size="10" font-weight="700" fill="#15803d" letter-spacing="1">PHONE</text>
 
-  <!-- Legend -->
-  <g transform="translate(208, 430)">
-    <line x1="0" y1="6" x2="24" y2="6" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arr-green)"/>
-    <text x="30" y="10" font-size="10" fill="#6b7280">user action</text>
-    <line x1="110" y1="6" x2="134" y2="6" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
-    <text x="140" y="10" font-size="10" fill="#6b7280">data flow</text>
-    <line x1="220" y1="6" x2="244" y2="6" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arr-purple)"/>
-    <text x="250" y="10" font-size="10" fill="#6b7280">external API</text>
+  <!-- Background: App -->
+  <rect x="176" y="12" width="336" height="476" rx="18" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="344" y="36" text-anchor="middle" font-size="10" font-weight="700" fill="#2563eb" letter-spacing="1">NEXT.JS APP</text>
+
+  <!-- Background: External -->
+  <rect x="528" y="12" width="220" height="476" rx="18" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1.5"/>
+  <text x="638" y="36" text-anchor="middle" font-size="10" font-weight="700" fill="#7c3aed" letter-spacing="1">OPEN FOOD FACTS</text>
+
+  <!-- === PHONE === -->
+  <!-- Browser -->
+  <rect x="26" y="52" width="120" height="48" rx="10" fill="white" stroke="#86efac" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="86" y="72" text-anchor="middle" font-size="11.5" font-weight="600" fill="#15803d">Mobile browser</text>
+  <text x="86" y="88" text-anchor="middle" font-size="10" fill="#6b7280">PWA · no install</text>
+
+  <!-- Camera -->
+  <rect x="26" y="118" width="120" height="48" rx="10" fill="white" stroke="#86efac" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="86" y="138" text-anchor="middle" font-size="11.5" font-weight="600" fill="#15803d">📷 Camera</text>
+  <text x="86" y="154" text-anchor="middle" font-size="10" fill="#6b7280">html5-qrcode</text>
+
+  <!-- Manual entry -->
+  <rect x="26" y="184" width="120" height="48" rx="10" fill="white" stroke="#86efac" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="86" y="204" text-anchor="middle" font-size="11.5" font-weight="600" fill="#15803d">⌨️ Manual entry</text>
+  <text x="86" y="220" text-anchor="middle" font-size="10" fill="#6b7280">override any field</text>
+
+  <!-- === APP — PAGES === -->
+  <rect x="192" y="52" width="138" height="48" rx="10" fill="white" stroke="#93c5fd" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="261" y="72" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1d4ed8">/ Inventory</text>
+  <text x="261" y="88" text-anchor="middle" font-size="10" fill="#6b7280">urgency · filter · search</text>
+
+  <rect x="350" y="52" width="148" height="48" rx="10" fill="white" stroke="#93c5fd" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="424" y="72" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1d4ed8">/add · /edit</text>
+  <text x="424" y="88" text-anchor="middle" font-size="10" fill="#6b7280">scan · lookup · save</text>
+
+  <!-- === APP — API === -->
+  <text x="344" y="128" text-anchor="middle" font-size="9.5" font-weight="700" fill="#94a3b8" letter-spacing="1.2">API ROUTES</text>
+
+  <rect x="192" y="140" width="138" height="52" rx="10" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.2" filter="url(#shadow)"/>
+  <text x="261" y="162" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">GET/POST /items</text>
+  <text x="261" y="178" text-anchor="middle" font-size="9.5" fill="#3b82f6">PATCH · PUT · DELETE</text>
+
+  <rect x="350" y="140" width="148" height="52" rx="10" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.2" filter="url(#shadow)"/>
+  <text x="424" y="162" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">GET /lookup</text>
+  <text x="424" y="178" text-anchor="middle" font-size="9.5" fill="#3b82f6">barcode → product data</text>
+
+  <!-- === APP — DB === -->
+  <rect x="234" y="370" width="220" height="96" rx="12" fill="white" stroke="#93c5fd" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="344" y="394" text-anchor="middle" font-size="12" font-weight="700" fill="#1d4ed8">SQLite</text>
+  <text x="344" y="412" text-anchor="middle" font-size="10" fill="#6b7280">Prisma v7 + libsql adapter</text>
+  <line x1="234" y1="422" x2="454" y2="422" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="259" y="438" font-size="9.5" fill="#94a3b8">name · brand · barcode</text>
+  <text x="259" y="452" font-size="9.5" fill="#94a3b8">category · packaging · expiry</text>
+  <text x="259" y="452" font-size="9.5" fill="#94a3b8"/>
+  <text x="430" y="438" text-anchor="end" font-size="9.5" fill="#94a3b8">nutri-score · labels</text>
+  <text x="430" y="452" text-anchor="end" font-size="9.5" fill="#94a3b8">pack size · photo URL</text>
+
+  <!-- === EXTERNAL === -->
+  <!-- Request -->
+  <rect x="544" y="140" width="188" height="52" rx="10" fill="white" stroke="#c4b5fd" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="638" y="160" text-anchor="middle" font-size="11" font-weight="600" fill="#6d28d9">Barcode lookup</text>
+  <text x="638" y="176" text-anchor="middle" font-size="9.5" fill="#7c3aed">world.openfoodfacts.org</text>
+
+  <!-- Response data box -->
+  <rect x="544" y="212" width="188" height="148" rx="10" fill="white" stroke="#c4b5fd" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="638" y="234" text-anchor="middle" font-size="11" font-weight="600" fill="#6d28d9">Returns</text>
+  <line x1="554" y1="242" x2="722" y2="242" stroke="#e9d5ff" stroke-width="1"/>
+  <text x="560" y="258" font-size="9.5" fill="#6b7280">• Name (DE / EN)</text>
+  <text x="560" y="273" font-size="9.5" fill="#6b7280">• Brand</text>
+  <text x="560" y="288" font-size="9.5" fill="#6b7280">• Category (PNNS mapped)</text>
+  <text x="560" y="303" font-size="9.5" fill="#6b7280">• Packaging type</text>
+  <text x="560" y="318" font-size="9.5" fill="#6b7280">• Pack size</text>
+  <text x="560" y="333" font-size="9.5" fill="#6b7280">• Nutri-score · Labels</text>
+  <text x="560" y="348" font-size="9.5" fill="#6b7280">• Product photo</text>
+
+  <!-- Note: free, no key -->
+  <rect x="544" y="378" width="188" height="34" rx="8" fill="#f3e8ff" stroke="#e9d5ff" stroke-width="1"/>
+  <text x="638" y="400" text-anchor="middle" font-size="10" fill="#7c3aed">Free · no API key needed</text>
+
+  <!-- === ARROWS === -->
+  <!-- Phone → Inventory -->
+  <line x1="146" y1="76" x2="190" y2="76" stroke="#2D5CB0" stroke-width="1.5" marker-end="url(#ag)"/>
+  <!-- Camera → /add -->
+  <line x1="146" y1="142" x2="350" y2="76" stroke="#2D5CB0" stroke-width="1.5" marker-end="url(#ag)" stroke-dasharray="5,3"/>
+  <!-- Manual → /add -->
+  <line x1="146" y1="208" x2="350" y2="100" stroke="#2D5CB0" stroke-width="1.5" marker-end="url(#ag)" stroke-dasharray="3,3"/>
+  <!-- Inventory → /items -->
+  <line x1="261" y1="100" x2="261" y2="138" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- /add → /lookup -->
+  <line x1="424" y1="100" x2="424" y2="138" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- /lookup → OFF -->
+  <line x1="498" y1="166" x2="542" y2="166" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#ap)"/>
+  <!-- OFF returns → /lookup -->
+  <line x1="542" y1="235" x2="498" y2="185" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#ap)" stroke-dasharray="5,3"/>
+  <!-- /items → DB -->
+  <line x1="261" y1="192" x2="280" y2="368" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- /lookup → DB (after fill) -->
+  <line x1="424" y1="192" x2="410" y2="368" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#a)" stroke-dasharray="4,3"/>
+
+  <!-- === LEGEND === -->
+  <g transform="translate(192, 458)">
+    <line x1="0" y1="6" x2="22" y2="6" stroke="#2D5CB0" stroke-width="1.5" marker-end="url(#ag)"/>
+    <text x="28" y="10" font-size="9.5" fill="#6b7280">user action</text>
+    <line x1="100" y1="6" x2="122" y2="6" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#a)"/>
+    <text x="128" y="10" font-size="9.5" fill="#6b7280">data flow</text>
+    <line x1="196" y1="6" x2="218" y2="6" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#ap)"/>
+    <text x="224" y="10" font-size="9.5" fill="#6b7280">external API</text>
+    <line x1="300" y1="6" x2="322" y2="6" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#a)" stroke-dasharray="4,2"/>
+    <text x="328" y="10" font-size="9.5" fill="#6b7280">optional / async</text>
   </g>
 </svg>
