@@ -3,7 +3,7 @@
 > A self-hosted, mobile-first PWA that scans barcodes, tracks expiry dates, and keeps your pantry under control.
 
 [![Build](https://github.com/judkacag/pantry-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/judkacag/pantry-tracker/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License: MIT NC](https://img.shields.io/badge/License-MIT%20Non--Commercial-green.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 [![Made in Berlin](https://img.shields.io/badge/Made%20in-Berlin%20🇩🇪-red)](https://en.wikipedia.org/wiki/Berlin)
 
