@@ -43,7 +43,7 @@ function fmtLeft(iso: string) {
 
 function ExpiryLine({ iso }: { iso: string }) {
   const s = expiryStatus(iso);
-  const color = s === "expired" ? "#C0531F" : s === "orange" ? "#B07A12" : s === "amber" ? "#6B8B1A" : "#3A8048";
+  const color = s === "expired" ? "#C0531F" : s === "orange" ? "#C4893A" : s === "amber" ? "#9A8050" : "#3A8048";
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 7, color, fontSize: 13, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap" }}>
       {fmtDate(iso)}
@@ -370,7 +370,7 @@ export default function Home() {
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column" }} className="screen-in">
       {/* Header */}
-      <div style={{ background: "var(--bg)", padding: "52px 20px 0", flexShrink: 0, position: "sticky", top: 0, zIndex: 10 }}>
+      <div style={{ background: "var(--bg)", padding: "52px 16px 0", flexShrink: 0, position: "sticky", top: 0, zIndex: 10 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 6 }}>
           <h1 style={{ margin: 0, fontFamily: "'Jost', system-ui, sans-serif", fontWeight: 700, fontSize: 32, letterSpacing: -0.8, color: "var(--ink)", lineHeight: 1 }}>
             Pantry
@@ -388,7 +388,7 @@ export default function Home() {
         {/* Search */}
         <div style={{
           display: "flex", alignItems: "center", gap: 10, marginTop: 18,
-          padding: "0 14px", height: 46, borderRadius: 999,
+          padding: "5px 14px", borderRadius: 999,
           background: "var(--field-bg)", border: `1.5px solid ${searchFocus ? "var(--accent)" : "transparent"}`,
           transition: "border-color .15s ease",
         }}>
@@ -487,7 +487,7 @@ export default function Home() {
             )}
           </div>
         )}
-        <div style={{ height: 1, background: "var(--border)", margin: "0 -20px" }} />
+        <div style={{ height: 1, background: "var(--border)", margin: "0 -16px" }} />
       </div>
 
       {/* List */}
