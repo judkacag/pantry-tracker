@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IconBack, IconCamera, IconCalendar, IconMinus, IconPlus } from "@/lib/icons";
 
@@ -206,10 +206,6 @@ export function ItemForm({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // Sync when barcode lookup fills in fields from parent
-  useEffect(() => {
-    if (initial.barcode) setF(initial);
-  }, [initial.barcode, initial.name]);
 
   const set = (k: keyof FormState, v: string | number) => setF(prev => ({ ...prev, [k]: v }));
   const valid = f.name.trim().length > 0;
@@ -289,6 +285,12 @@ export function ItemForm({
             <span style={{ color: "var(--faint)", fontSize: 12, pointerEvents: "none" }}>▾</span>
           </div>
         </div>
+        {/* Quantity + Expiry */}
+        <div style={{ display: "flex", gap: 14 }}>
+          <div style={{ width: 155 }}><QtyStepper value={f.quantity} onChange={v => set("quantity", v)} /></div>
+          <div style={{ flex: 1 }}><DateField value={f.expiryDate} onChange={v => set("expiryDate", v)} /></div>
+        </div>
+
         {/* Packaging type dropdown */}
         <SelectField label="Packaging type" value={f.packagingTag} onChange={v => set("packagingTag", v)} options={PACKAGING_TAGS} placeholder="Select packaging type…" />
 
@@ -315,11 +317,6 @@ export function ItemForm({
             </div>
           </div>
         )}
-
-        <div style={{ display: "flex", gap: 14 }}>
-          <div style={{ width: 155 }}><QtyStepper value={f.quantity} onChange={v => set("quantity", v)} /></div>
-          <div style={{ flex: 1 }}><DateField value={f.expiryDate} onChange={v => set("expiryDate", v)} /></div>
-        </div>
       </form>
 
       {/* Sticky save */}

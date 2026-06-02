@@ -71,7 +71,7 @@ export default function AddPage() {
     router.push("/");
   }
 
-  // Show scanner overlay if scanning
+  // Scanner overlay
   if (scanning) {
     return (
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -89,8 +89,19 @@ export default function AddPage() {
     );
   }
 
+  // Looking up — keep off screen until data is ready so ItemForm mounts with filled initial
+  if (lookupState === "loading") {
+    return (
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 12 }}>
+        <p style={{ color: "var(--muted)", fontSize: 15, fontFamily: "'Jost', system-ui, sans-serif" }}>Looking up product…</p>
+      </div>
+    );
+  }
+
+  // ItemForm mounts fresh — initial already has all data from the lookup
   return (
     <ItemForm
+      key={form.barcode || "new"}
       mode="add"
       initial={form}
       onSave={onSave}

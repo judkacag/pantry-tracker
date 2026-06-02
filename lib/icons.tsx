@@ -42,3 +42,8 @@ export function IconTrash({ size = 24 }: { size?: number }) {
     <path d="M9.7 10.3v6.6M14.3 10.3v6.6" {...S} />
   </Svg>;
 }
+export function IconFilter({ size = 24 }: { size?: number }) {
+  return <Svg size={size}>
+    <path d="M4 6h16M7 12h10M10 18h4" {...S} />
+  </Svg>;
+}
