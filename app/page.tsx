@@ -1,64 +1,163 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
+type Item = {
+  id: number;
+  name: string;
+  brand: string | null;
+  category: string | null;
+  packaging: string | null;
+  location: string;
+  quantity: number;
+  expiryDate: string | null;
+};
+
+const PACKAGING_EMOJI: Record<string, string> = {
+  can: "🥫",
+  glass: "🫙",
+  carton: "📦",
+  dry: "🌾",
+};
+
+function daysLeft(dateStr: string) {
+  return Math.ceil((new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+}
+
+function ExpiryBadge({ dateStr }: { dateStr: string }) {
+  const days = daysLeft(dateStr);
+  const label = new Date(dateStr).toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  const color =
+    days <= 7 ? "bg-red-100 text-red-700" :
+    days <= 30 ? "bg-amber-100 text-amber-700" :
+    "bg-green-100 text-green-700";
+  return (
+    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${color}`}>
+      {label} · {days}d
+    </span>
+  );
+}
 
 export default function Home() {
+  const [items, setItems] = useState<Item[]>([]);
+  const [filter, setFilter] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  async function load() {
+    const res = await fetch("/api/items");
+    setItems(await res.json());
+    setLoading(false);
+  }
+
+  useEffect(() => { load(); }, []);
+
+  async function consume(id: number) {
+    await fetch(`/api/items/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ consumedAt: new Date().toISOString() }),
+    });
+    setItems((prev) => prev.filter((i) => i.id !== id));
+  }
+
+  async function remove(id: number) {
+    if (!confirm("Delete this item?")) return;
+    await fetch(`/api/items/${id}`, { method: "DELETE" });
+    setItems((prev) => prev.filter((i) => i.id !== id));
+  }
+
+  const filtered = items.filter((i) =>
+    [i.name, i.brand, i.category, i.packaging]
+      .join(" ")
+      .toLowerCase()
+      .includes(filter.toLowerCase())
+  );
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="flex flex-col flex-1">
+      <header className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
+        <h1 className="text-lg font-semibold text-green-700">Pantry</h1>
+        <Link
+          href="/add"
+          className="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-green-700 active:scale-95 transition-transform"
+        >
+          + Add item
+        </Link>
+      </header>
+
+      <div className="px-4 py-3">
+        <input
+          type="search"
+          placeholder="Search items..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+      </div>
+
+      <main className="flex-1 px-4 pb-8 space-y-3">
+        {loading && (
+          <p className="text-center text-gray-400 text-sm pt-12">Loading...</p>
+        )}
+        {!loading && filtered.length === 0 && (
+          <p className="text-center text-gray-400 text-sm pt-12">
+            {filter ? "No items match." : "Your pantry is empty — add something!"}
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+        )}
+        {filtered.map((item) => (
+          <div key={item.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-gray-900 truncate">
+                  {item.packaging ? PACKAGING_EMOJI[item.packaging] + " " : ""}
+                  {item.name}
+                </p>
+                {item.brand && (
+                  <p className="text-xs text-gray-400 mt-0.5">{item.brand}</p>
+                )}
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {item.category && (
+                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                      {item.category}
+                    </span>
+                  )}
+                  {item.packaging && (
+                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full capitalize">
+                      {item.packaging}
+                    </span>
+                  )}
+                  {item.quantity > 1 && (
+                    <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
+                      x{item.quantity}
+                    </span>
+                  )}
+                  {item.expiryDate && <ExpiryBadge dateStr={item.expiryDate} />}
+                </div>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <button
+                  onClick={() => consume(item.id)}
+                  title="Mark as consumed"
+                  className="text-green-600 hover:bg-green-50 rounded-xl p-2 transition-colors text-lg"
+                >
+                  ✓
+                </button>
+                <button
+                  onClick={() => remove(item.id)}
+                  title="Delete"
+                  className="text-red-400 hover:bg-red-50 rounded-xl p-2 transition-colors text-lg"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
       </main>
     </div>
   );

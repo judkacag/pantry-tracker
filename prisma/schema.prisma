@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Item {
+  id         Int       @id @default(autoincrement())
+  name       String
+  brand      String?
+  barcode    String?
+  category   String?
+  packaging  String?
+  location   String    @default("pantry")
+  quantity   Int       @default(1)
+  expiryDate DateTime?
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
