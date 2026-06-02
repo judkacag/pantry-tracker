@@ -11,6 +11,7 @@ type Item = {
   brand: string | null;
   category: string | null;
   packaging: string | null;
+  packagingTag: string | null;
   location: string;
   quantity: number;
   expiryDate: string | null;
@@ -28,7 +29,7 @@ function expiryStatus(iso: string | null) {
   return "green";
 }
 function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+  return iso.split("T")[0];
 }
 function fmtLeft(iso: string) {
   const d = daysLeft(iso);
@@ -164,7 +165,7 @@ function ItemRow({ item, onConsume, onDelete, leaving }: {
   onDelete: () => void;
   leaving: boolean;
 }) {
-  const meta = [item.brand, item.category, item.packaging ? item.packaging.charAt(0).toUpperCase() + item.packaging.slice(1) : null]
+  const meta = [item.brand, item.category, item.packagingTag || null]
     .filter(Boolean).join(" · ");
 
   return (

@@ -7,16 +7,21 @@ datasource db {
 }
 
 model Item {
-  id         Int       @id @default(autoincrement())
-  name       String
-  brand      String?
-  barcode    String?
-  category   String?
-  packaging  String?
-  location   String    @default("pantry")
-  quantity   Int       @default(1)
-  expiryDate DateTime?
-  consumedAt DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id               Int       @id @default(autoincrement())
+  name             String
+  brand            String?
+  barcode          String?
+  category         String?
+  packaging        String?
+  packagingTag     String?
+  packSize         String?
+  nutriscoreGrade  String?
+  labelTags        String?
+  imageUrl         String?
+  location         String    @default("pantry")
+  quantity         Int       @default(1)
+  expiryDate       DateTime?
+  consumedAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }

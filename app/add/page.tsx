@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ItemForm, type FormState } from "@/lib/ItemForm";
 
-const EMPTY: FormState = { name: "", brand: "", barcode: "", category: "", packaging: "", quantity: 1, expiryDate: "" };
+const EMPTY: FormState = { name: "", brand: "", barcode: "", category: "", packaging: "", packagingTag: "", packSize: "", nutriscoreGrade: "", labelTags: "", imageUrl: "", quantity: 1, expiryDate: "" };
 
 export default function AddPage() {
   const router = useRouter();
@@ -21,9 +21,14 @@ export default function AddPage() {
     if (data.found) {
       setForm(prev => ({
         ...prev, barcode,
-        name: data.name || prev.name,
-        brand: data.brand || prev.brand,
-        category: data.category || prev.category,
+        name:            data.name || prev.name,
+        brand:           data.brand || prev.brand,
+        category:        data.category || prev.category,
+        packagingTag:    data.packagingTag || prev.packagingTag,
+        packSize:        data.packSize || prev.packSize,
+        nutriscoreGrade: data.nutriscoreGrade || prev.nutriscoreGrade,
+        labelTags:       data.labelTags || prev.labelTags,
+        imageUrl:        data.imageUrl || prev.imageUrl,
       }));
       setLookupState("found");
     } else {

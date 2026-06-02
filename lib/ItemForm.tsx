@@ -10,9 +10,36 @@ export type FormState = {
   barcode: string;
   category: string;
   packaging: string;
+  packagingTag: string;
+  packSize: string;
+  nutriscoreGrade: string;
+  labelTags: string;
+  imageUrl: string;
   quantity: number;
   expiryDate: string;
 };
+
+const CATEGORIES = [
+  "Dairy & eggs",
+  "Grains & pasta",
+  "Legumes",
+  "Herbs & spices",
+  "Cooking staples",
+  "Snacks & sweets",
+  "Drinks",
+  "Baking",
+  "Fresh produce",
+  "Meat & fish",
+  "Others",
+];
+
+const PACKAGING_TAGS = [
+  "Tetra Pak", "Glass jar", "Glass bottle", "Metal can", "Plastic bag",
+  "Paper bag", "Cardboard box", "Plastic bottle", "Plastic tub",
+  "Tube", "Sachet", "Pouch", "Vacuum pack", "Multilayer composite",
+];
+
+const NUTRISCORE_GRADES = ["A", "B", "C", "D", "E"];
 
 const PACKAGING: { key: string; label: string; emoji: string }[] = [
   { key: "can",    label: "Can",    emoji: "🥫" },
@@ -51,6 +78,41 @@ function TextField({ label, required, value, onChange, placeholder, inputMode }:
           placeholder={placeholder} inputMode={inputMode}
           style={{ flex: 1, border: "none", outline: "none", background: "transparent", fontFamily: "'Jost', system-ui, sans-serif", fontSize: 16, color: "var(--ink)", minWidth: 0 }}
         />
+      </div>
+    </div>
+  );
+}
+
+function SelectField({ label, value, onChange, options, placeholder }: {
+  label: string; value: string; onChange: (v: string) => void;
+  options: string[]; placeholder?: string;
+}) {
+  const [focus, setFocus] = useState(false);
+  return (
+    <div>
+      <FieldLabel>{label}</FieldLabel>
+      <div style={{
+        display: "flex", alignItems: "center", height: 52, padding: "0 15px",
+        borderRadius: "var(--radius-sm)", background: "var(--field-bg)",
+        border: `1.5px solid ${focus ? "var(--accent)" : "var(--border)"}`,
+        transition: "border-color .15s ease",
+      }}>
+        <select
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          onFocus={() => setFocus(true)}
+          onBlur={() => setFocus(false)}
+          style={{
+            flex: 1, border: "none", outline: "none", background: "transparent",
+            fontFamily: "'Jost', system-ui, sans-serif", fontSize: 16,
+            color: value ? "var(--ink)" : "var(--faint)",
+            appearance: "none", WebkitAppearance: "none", cursor: "pointer",
+          }}
+        >
+          <option value="">{placeholder ?? "N/A"}</option>
+          {options.map(o => <option key={o} value={o}>{o}</option>)}
+        </select>
+        <span style={{ color: "var(--faint)", fontSize: 12, pointerEvents: "none" }}>▾</span>
       </div>
     </div>
   );
@@ -202,8 +264,58 @@ export function ItemForm({
         <TextField label="Barcode" value={f.barcode} onChange={v => set("barcode", v)} placeholder="e.g. 4006381333931" inputMode="numeric" />
         <TextField label="Name" required value={f.name} onChange={v => set("name", v)} placeholder="e.g. Chickpeas" />
         <TextField label="Brand" value={f.brand} onChange={v => set("brand", v)} placeholder="e.g. Alnatura" />
-        <TextField label="Category" value={f.category} onChange={v => set("category", v)} placeholder="e.g. Legumes, Dairy, Cooking" />
-        <PackagingPicker value={f.packaging} onChange={v => set("packaging", v)} />
+        <div>
+          <FieldLabel>Category</FieldLabel>
+          <div style={{
+            height: 52, padding: "0 15px", borderRadius: "var(--radius-sm)",
+            background: "var(--field-bg)", border: "1.5px solid var(--border)",
+            display: "flex", alignItems: "center",
+          }}>
+            <select
+              value={f.category}
+              onChange={e => set("category", e.target.value)}
+              style={{
+                flex: 1, border: "none", outline: "none", background: "transparent",
+                fontFamily: "'Jost', system-ui, sans-serif", fontSize: 16,
+                color: f.category ? "var(--ink)" : "var(--faint)",
+                appearance: "none", WebkitAppearance: "none", cursor: "pointer",
+              }}
+            >
+              <option value="">Select a category…</option>
+              {CATEGORIES.map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <span style={{ color: "var(--faint)", fontSize: 12, pointerEvents: "none" }}>▾</span>
+          </div>
+        </div>
+        {/* Packaging type dropdown */}
+        <SelectField label="Packaging type" value={f.packagingTag} onChange={v => set("packagingTag", v)} options={PACKAGING_TAGS} placeholder="Select packaging type…" />
+
+        {/* Pack size + Nutriscore */}
+        <div style={{ display: "flex", gap: 14 }}>
+          <div style={{ flex: 1 }}>
+            <TextField label="Pack size" value={f.packSize} onChange={v => set("packSize", v)} placeholder="e.g. 400g, 250ml" />
+          </div>
+          <div style={{ flex: 1 }}>
+            <SelectField label="Nutri-score" value={f.nutriscoreGrade} onChange={v => set("nutriscoreGrade", v)} options={NUTRISCORE_GRADES} placeholder="N/A" />
+          </div>
+        </div>
+
+        {/* Labels */}
+        <TextField label="Labels" value={f.labelTags} onChange={v => set("labelTags", v)} placeholder="e.g. Vegan, Organic" />
+
+        {/* Product image */}
+        {f.imageUrl && (
+          <div>
+            <FieldLabel>Product photo</FieldLabel>
+            <div style={{ borderRadius: "var(--radius-sm)", overflow: "hidden", background: "var(--field-bg)", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 140 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={f.imageUrl} alt={f.name} style={{ maxHeight: 200, maxWidth: "100%", objectFit: "contain", display: "block" }} />
+            </div>
+          </div>
+        )}
+
         <div style={{ display: "flex", gap: 14 }}>
           <div style={{ width: 155 }}><QtyStepper value={f.quantity} onChange={v => set("quantity", v)} /></div>
           <div style={{ flex: 1 }}><DateField value={f.expiryDate} onChange={v => set("expiryDate", v)} /></div>

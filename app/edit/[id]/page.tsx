@@ -16,13 +16,18 @@ export default function EditPage() {
         const item = items.find((i: { id: number }) => i.id === Number(id));
         if (!item) { router.push("/"); return; }
         setInitial({
-          name: item.name ?? "",
-          brand: item.brand ?? "",
-          barcode: item.barcode ?? "",
-          category: item.category ?? "",
-          packaging: item.packaging ?? "",
-          quantity: item.quantity ?? 1,
-          expiryDate: item.expiryDate
+          name:            item.name ?? "",
+          brand:           item.brand ?? "",
+          barcode:         item.barcode ?? "",
+          category:        item.category ?? "",
+          packaging:       item.packaging ?? "",
+          packagingTag:    item.packagingTag ?? "",
+          packSize:        item.packSize ?? "",
+          nutriscoreGrade: item.nutriscoreGrade ?? "",
+          labelTags:       item.labelTags ?? "",
+          imageUrl:        item.imageUrl ?? "",
+          quantity:        item.quantity ?? 1,
+          expiryDate:      item.expiryDate
             ? new Date(item.expiryDate).toISOString().split("T")[0]
             : "",
         });
