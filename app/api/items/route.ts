@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const consumed = req.nextUrl.searchParams.get("consumed") === "true";
   const items = await prisma.item.findMany({
-    where: { consumedAt: null },
-    orderBy: { expiryDate: "asc" },
+    where: consumed ? { consumedAt: { not: null } } : { consumedAt: null },
+    orderBy: consumed ? { consumedAt: "desc" } : { expiryDate: "asc" },
   });
   return NextResponse.json(items);
 }

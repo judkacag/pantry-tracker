@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const PACKAGING_OPTIONS = ["can", "glass", "carton", "dry"];
+const PACKAGING_OPTIONS = ["can", "glass", "carton", "bag", "tube"];
 
 type FormState = {
   name: string;
@@ -115,7 +115,7 @@ export default function AddPage() {
   return (
     <div className="flex flex-col flex-1">
       <header className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 shadow-sm">
-        <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-900 p-1 -ml-1">
+        <button onClick={() => router.back()} className="text-gray-700 hover:text-gray-900 p-1 -ml-1">
           ←
         </button>
         <h1 className="text-lg font-semibold text-green-700">Add item</h1>
@@ -131,7 +131,7 @@ export default function AddPage() {
                 try { scannerInstanceRef.current?.clear(); } catch { }
                 setScanning(false);
               }}
-              className="mt-2 w-full text-sm text-gray-500 underline"
+              className="mt-2 w-full text-sm text-gray-700 underline"
             >
               Cancel scan
             </button>
@@ -147,7 +147,7 @@ export default function AddPage() {
         )}
 
         {lookupState === "loading" && (
-          <p className="text-center text-sm text-gray-400 mb-4">Looking up product...</p>
+          <p className="text-center text-sm text-gray-600 mb-4">Looking up product...</p>
         )}
         {lookupState === "found" && (
           <p className="text-center text-sm text-green-600 mb-4">Product found ✓</p>
@@ -202,7 +202,7 @@ export default function AddPage() {
           </Field>
 
           <Field label="Packaging">
-            <div className="grid grid-cols-4 gap-2">
+            <div className="flex flex-wrap gap-2">
               {PACKAGING_OPTIONS.map((p) => (
                 <button
                   key={p}
@@ -257,7 +257,7 @@ export default function AddPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+      <label className="block text-xs font-medium text-gray-700 mb-1.5 uppercase tracking-wide">
         {label}
       </label>
       {children}
@@ -266,4 +266,4 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 const inputCls =
-  "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500";
+  "w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500";

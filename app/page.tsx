@@ -18,7 +18,8 @@ const PACKAGING_EMOJI: Record<string, string> = {
   can: "🥫",
   glass: "🫙",
   carton: "📦",
-  dry: "🌾",
+  bag: "🛍️",
+  tube: "🪥",
 };
 
 function daysLeft(dateStr: string) {
@@ -49,6 +50,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   async function load() {
+    setLoading(true);
     const res = await fetch("/api/items");
     setItems(await res.json());
     setLoading(false);
@@ -96,16 +98,16 @@ export default function Home() {
           placeholder="Search items..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
       </div>
 
       <main className="flex-1 px-4 pb-8 space-y-3">
         {loading && (
-          <p className="text-center text-gray-400 text-sm pt-12">Loading...</p>
+          <p className="text-center text-gray-600 text-sm pt-12">Loading...</p>
         )}
         {!loading && filtered.length === 0 && (
-          <p className="text-center text-gray-400 text-sm pt-12">
+          <p className="text-center text-gray-600 text-sm pt-12">
             {filter ? "No items match." : "Your pantry is empty — add something!"}
           </p>
         )}
@@ -113,21 +115,21 @@ export default function Home() {
           <div key={item.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900 truncate">
+                <Link href={`/edit/${item.id}`} className="font-medium text-gray-900 truncate hover:text-green-700 transition-colors block">
                   {item.packaging ? PACKAGING_EMOJI[item.packaging] + " " : ""}
                   {item.name}
-                </p>
+                </Link>
                 {item.brand && (
-                  <p className="text-xs text-gray-400 mt-0.5">{item.brand}</p>
+                  <p className="text-xs text-gray-600 mt-0.5">{item.brand}</p>
                 )}
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {item.category && (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
                       {item.category}
                     </span>
                   )}
                   {item.packaging && (
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full capitalize">
+                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full capitalize">
                       {item.packaging}
                     </span>
                   )}
