@@ -9,13 +9,9 @@
 
 ---
 
-## The problem
+## Why
 
-Food waste is one of those problems that feels small until you add it up — expired cans at the back of the shelf, coconut milk forgotten for a year, chickpeas past their best. I wanted a system that would just tell me what needs eating before it's too late.
-
-Off-the-shelf apps like Grocy are powerful but complex. I wanted something minimal, beautiful on mobile, and fully under my control.
-
-So I built one.
+I kept throwing out food that had quietly expired at the back of the cupboard. I looked at existing tools but they were more than I needed, so I built a simple version that covers my current use case: scan something when it goes in, get an email when it's about to go off.
 
 ---
 
@@ -121,12 +117,6 @@ Hit `/api/cron` in your browser to trigger the check manually. Any items expirin
 - [ ] Cloud deploy on Hetzner with Tailscale
 - [ ] Photo-based expiry date OCR
 - [ ] Shopping list from low / empty items
-
----
-
-## Contributing
-
-Issues and PRs are welcome. Please open an issue first for anything beyond small fixes.
 
 ---
 
