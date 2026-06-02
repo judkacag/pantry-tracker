@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import Link from "next/link";
+import { IconSearch, IconPlus, IconX, IconCheck, IconTrash } from "@/lib/icons";
+import { CategoryIcon } from "@/lib/category";
 
 type Item = {
   id: number;
@@ -14,43 +16,248 @@ type Item = {
   expiryDate: string | null;
 };
 
-const PACKAGING_EMOJI: Record<string, string> = {
-  can: "🥫",
-  glass: "🫙",
-  carton: "📦",
-  bag: "🛍️",
-  tube: "🪥",
-};
-
-function daysLeft(dateStr: string) {
-  return Math.ceil((new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+// ── Expiry helpers ─────────────────────────────────────────
+function daysLeft(iso: string) {
+  return Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000);
+}
+function expiryStatus(iso: string | null) {
+  if (!iso) return "none";
+  const d = daysLeft(iso);
+  if (d <= 7) return "red";
+  if (d <= 30) return "amber";
+  return "green";
+}
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+function fmtLeft(iso: string) {
+  const d = daysLeft(iso);
+  if (d < 0) return `${Math.abs(d)}d ago`;
+  if (d === 0) return "today";
+  if (d <= 30) return `${d}d left`;
+  if (d < 365) return `${Math.round(d / 30)}mo left`;
+  return `${(d / 365).toFixed(1)}y left`;
 }
 
-function ExpiryBadge({ dateStr }: { dateStr: string }) {
-  const days = daysLeft(dateStr);
-  const label = new Date(dateStr).toLocaleDateString("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-  const color =
-    days <= 7 ? "bg-red-100 text-red-700" :
-    days <= 30 ? "bg-amber-100 text-amber-700" :
-    "bg-green-100 text-green-700";
+function ExpiryLine({ iso }: { iso: string }) {
+  const s = expiryStatus(iso);
+  const color = s === "red" ? "var(--red)" : s === "amber" ? "var(--amber)" : "var(--green)";
   return (
-    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${color}`}>
-      {label} · {days}d
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 7, color, fontSize: 13, fontWeight: 600, letterSpacing: 0.2, whiteSpace: "nowrap" }}>
+      {fmtDate(iso)}
+      <span style={{ width: 4, height: 4, borderRadius: 999, background: "currentColor", flexShrink: 0 }} />
+      {fmtLeft(iso)}
     </span>
   );
 }
+
+// ── Swipe-to-reveal row ────────────────────────────────────
+function SwipeRow({ onEdit, onConsume, onDelete, leaving, children }: {
+  onEdit: () => void;
+  onConsume: () => void;
+  onDelete: () => void;
+  leaving: boolean;
+  children: React.ReactNode;
+}) {
+  const ACT = 80;
+  const TOTAL = ACT * 2;
+  const [dx, setDx] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const dxRef = useRef(0);
+  const st = useRef<{ x: number; base: number; moved: number } | null>(null);
+  const suppress = useRef(false);
+
+  const setDxBoth = (v: number) => { dxRef.current = v; setDx(v); };
+
+  useEffect(() => {
+    const move = (e: PointerEvent) => {
+      const s = st.current; if (!s) return;
+      const d = e.clientX - s.x;
+      s.moved = Math.max(s.moved, Math.abs(d));
+      setDxBoth(Math.max(-TOTAL, Math.min(0, s.base + d)));
+    };
+    const up = () => {
+      const s = st.current; if (!s) return;
+      st.current = null;
+      setDragging(false);
+      setDxBoth(dxRef.current < -TOTAL / 2 ? -TOTAL : 0);
+      if (s.moved > 6) { suppress.current = true; setTimeout(() => { suppress.current = false; }, 150); }
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+    };
+  }, []);
+
+  const onDown = (e: React.PointerEvent) => {
+    st.current = { x: e.clientX, base: dxRef.current, moved: 0 };
+    setDragging(true);
+  };
+  const onClick = (e: React.MouseEvent) => {
+    if (suppress.current) { e.stopPropagation(); e.preventDefault(); return; }
+    if (dxRef.current !== 0) { e.stopPropagation(); e.preventDefault(); setDxBoth(0); return; }
+    onEdit();
+  };
+
+  const actionBtn = (isConsume: boolean) => (
+    <button
+      onClick={(e) => { e.stopPropagation(); setDxBoth(0); isConsume ? onConsume() : onDelete(); }}
+      style={{
+        width: ACT, border: "none", cursor: "pointer", flexShrink: 0,
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5,
+        background: isConsume ? "var(--green)" : "var(--red)", color: "#fff",
+        fontFamily: "'Jost', system-ui, sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: 0.2,
+      }}
+    >
+      {isConsume ? <IconCheck size={22} /> : <IconTrash size={21} />}
+      {isConsume ? "Used" : "Delete"}
+    </button>
+  );
+
+  return (
+    <div style={{
+      overflow: "hidden", position: "relative",
+      opacity: leaving ? 0 : 1,
+      maxHeight: leaving ? 0 : 200,
+      transition: "opacity .22s ease, max-height .3s ease .04s",
+    }}>
+      <div style={{ position: "absolute", inset: 0, display: "flex", justifyContent: "flex-end" }}>
+        {actionBtn(true)}
+        {actionBtn(false)}
+      </div>
+      <div
+        onPointerDown={onDown}
+        onClick={onClick}
+        style={{
+          position: "relative",
+          transform: `translateX(${dx}px)`,
+          touchAction: "pan-y",
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          cursor: "pointer",
+          transition: dragging ? "none" : "transform .28s cubic-bezier(.2,0,0,1)",
+          background: "var(--bg)",
+        }}
+      >
+        {children}
+        <span style={{
+          position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+          color: "var(--faint)", opacity: dx === 0 ? 0.4 : 0, transition: "opacity .15s ease", pointerEvents: "none",
+        }}>
+          <svg width="7" height="13" viewBox="0 0 7 13" fill="none">
+            <path d="M6 1L1.5 6.5 6 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ── Item row ───────────────────────────────────────────────
+function ItemRow({ item, onConsume, onDelete, leaving }: {
+  item: Item;
+  onConsume: () => void;
+  onDelete: () => void;
+  leaving: boolean;
+}) {
+  const meta = [item.brand, item.category, item.packaging ? item.packaging.charAt(0).toUpperCase() + item.packaging.slice(1) : null]
+    .filter(Boolean).join(" · ");
+
+  return (
+    <SwipeRow
+      onEdit={() => { window.location.href = `/edit/${item.id}`; }}
+      onConsume={onConsume}
+      onDelete={onDelete}
+      leaving={leaving}
+    >
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "14px 16px", borderBottom: "1px solid var(--border)" }}>
+        <CategoryIcon category={item.category} size={22} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontWeight: 600, fontSize: 17, color: "var(--ink)", letterSpacing: -0.3, lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {item.name}
+          </div>
+          {meta && (
+            <div style={{ fontSize: 12.5, fontWeight: 500, color: "var(--muted)", marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {meta}
+            </div>
+          )}
+          {item.expiryDate && (
+            <div style={{ marginTop: 8 }}>
+              <ExpiryLine iso={item.expiryDate} />
+            </div>
+          )}
+        </div>
+        {item.quantity > 1 && (
+          <div style={{
+            flexShrink: 0, alignSelf: "center", marginRight: 16,
+            height: 24, minWidth: 32, padding: "0 9px", borderRadius: 999,
+            background: "var(--field-bg)", border: "1px solid var(--border)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 13, fontWeight: 700, color: "var(--ink)",
+          }}>
+            ×{item.quantity}
+          </div>
+        )}
+      </div>
+    </SwipeRow>
+  );
+}
+
+// ── Group header ───────────────────────────────────────────
+function GroupHeader({ label, sub, count }: { label: string; sub?: string; count: number }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "22px 16px 10px", flexWrap: "nowrap" }}>
+      <h2 style={{ margin: 0, fontSize: 13.5, fontWeight: 700, color: "var(--ink)", whiteSpace: "nowrap", flexShrink: 0 }}>{label}</h2>
+      <span style={{
+        minWidth: 20, height: 20, padding: "0 6px", borderRadius: 999, flexShrink: 0,
+        background: "var(--chip-bg)", color: "var(--chip-ink)", fontSize: 11.5, fontWeight: 700,
+        display: "inline-flex", alignItems: "center", justifyContent: "center",
+      }}>{count}</span>
+      {sub && <span style={{ fontSize: 12, color: "var(--faint)", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{sub}</span>}
+    </div>
+  );
+}
+
+// ── Toast ──────────────────────────────────────────────────
+function Toast({ msg }: { msg: string | null }) {
+  if (!msg) return null;
+  return (
+    <div style={{
+      position: "fixed", left: "50%", bottom: 36, transform: "translateX(-50%)", zIndex: 80,
+      padding: "12px 20px", borderRadius: 999, whiteSpace: "nowrap",
+      background: "var(--ink)", color: "var(--bg)",
+      fontFamily: "'Jost', system-ui, sans-serif", fontSize: 14, fontWeight: 600,
+      boxShadow: "0 8px 30px rgba(0,0,0,0.25)",
+      animation: "toastIn .26s cubic-bezier(.2,0,0,1)",
+    }}>{msg}</div>
+  );
+}
+
+// ── Main ───────────────────────────────────────────────────
+type Grouping = "urgency" | "category" | "all";
+
+const URGENCY_GROUPS = [
+  { key: "red",   label: "Expiring soon",    sub: "7 days or less" },
+  { key: "amber", label: "Use this month",   sub: "within 30 days" },
+  { key: "green", label: "Plenty of time",   sub: "over a month" },
+  { key: "none",  label: "No expiry set",    sub: "" },
+];
 
 export default function Home() {
   const [items, setItems] = useState<Item[]>([]);
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const [grouping, setGrouping] = useState<Grouping>("urgency");
+  const [leavingId, setLeavingId] = useState<number | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const [searchFocus, setSearchFocus] = useState(false);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function load() {
-    setLoading(true);
     const res = await fetch("/api/items");
     setItems(await res.json());
     setLoading(false);
@@ -58,109 +265,156 @@ export default function Home() {
 
   useEffect(() => { load(); }, []);
 
+  function flash(msg: string) {
+    setToast(msg);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 1900);
+  }
+
+  function removeWithAnim(id: number, msg: string) {
+    setLeavingId(id);
+    setTimeout(() => {
+      setItems(prev => prev.filter(i => i.id !== id));
+      setLeavingId(null);
+      flash(msg);
+    }, 300);
+  }
+
   async function consume(id: number) {
     await fetch(`/api/items/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ consumedAt: new Date().toISOString() }),
     });
-    setItems((prev) => prev.filter((i) => i.id !== id));
+    removeWithAnim(id, "Marked as used");
   }
 
   async function remove(id: number) {
     if (!confirm("Delete this item?")) return;
     await fetch(`/api/items/${id}`, { method: "DELETE" });
-    setItems((prev) => prev.filter((i) => i.id !== id));
+    removeWithAnim(id, "Item deleted");
   }
 
-  const filtered = items.filter((i) =>
-    [i.name, i.brand, i.category, i.packaging]
-      .join(" ")
-      .toLowerCase()
-      .includes(filter.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    const q = filter.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(i => [i.name, i.brand, i.category].join(" ").toLowerCase().includes(q));
+  }, [items, filter]);
+
+  const groups = useMemo(() => {
+    const sorted = [...filtered].sort((a, b) => {
+      if (!a.expiryDate && !b.expiryDate) return 0;
+      if (!a.expiryDate) return 1;
+      if (!b.expiryDate) return -1;
+      return new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime();
+    });
+
+    if (grouping === "all") return [{ key: "all", label: "", count: sorted.length, items: sorted }];
+
+    if (grouping === "urgency") {
+      return URGENCY_GROUPS.map(g => ({
+        key: g.key, label: g.label, sub: g.sub, count: 0,
+        items: sorted.filter(i => expiryStatus(i.expiryDate) === g.key),
+      })).filter(g => g.items.length).map(g => ({ ...g, count: g.items.length }));
+    }
+
+    // category grouping
+    const cats: Record<string, Item[]> = {};
+    sorted.forEach(i => { const k = i.category || "Uncategorised"; (cats[k] ||= []).push(i); });
+    return Object.keys(cats).sort().map(k => ({ key: k, label: k, count: cats[k].length, items: cats[k] }));
+  }, [filtered, grouping]);
 
   return (
-    <div className="flex flex-col flex-1">
-      <header className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
-        <h1 className="text-lg font-semibold text-green-700">Pantry</h1>
-        <Link
-          href="/add"
-          className="bg-green-600 text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-green-700 active:scale-95 transition-transform"
-        >
-          + Add item
-        </Link>
-      </header>
+    <div style={{ flex: 1, display: "flex", flexDirection: "column" }} className="screen-in">
+      {/* Header */}
+      <div style={{ background: "var(--bg)", padding: "52px 20px 0", flexShrink: 0, position: "sticky", top: 0, zIndex: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 6 }}>
+          <h1 style={{ margin: 0, fontFamily: "'Jost', system-ui, sans-serif", fontWeight: 700, fontSize: 32, letterSpacing: -0.8, color: "var(--ink)", lineHeight: 1 }}>
+            Pantry
+          </h1>
+          <Link href="/add" style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            padding: "9px 15px 9px 12px", borderRadius: 999, textDecoration: "none",
+            background: "var(--accent-soft)", color: "var(--accent)",
+            fontFamily: "'Jost', system-ui, sans-serif", fontSize: 14.5, fontWeight: 600, letterSpacing: -0.1,
+          }}>
+            <IconPlus size={17} /> Add item
+          </Link>
+        </div>
 
-      <div className="px-4 py-3">
-        <input
-          type="search"
-          placeholder="Search items..."
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
+        {/* Search */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 10, marginTop: 18,
+          padding: "0 14px", height: 46, borderRadius: 999,
+          background: "var(--field-bg)", border: `1.5px solid ${searchFocus ? "var(--accent)" : "transparent"}`,
+          transition: "border-color .15s ease",
+        }}>
+          <span style={{ color: "var(--faint)", display: "inline-flex" }}><IconSearch size={19} /></span>
+          <input
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+            onFocus={() => setSearchFocus(true)}
+            onBlur={() => setSearchFocus(false)}
+            placeholder="Search items…"
+            style={{ flex: 1, border: "none", outline: "none", background: "transparent", fontFamily: "'Jost', system-ui, sans-serif", fontSize: 15.5, color: "var(--ink)" }}
+          />
+          {filter && (
+            <button onClick={() => setFilter("")} style={{ all: "unset", cursor: "pointer", color: "var(--faint)", display: "inline-flex" }}>
+              <IconX size={17} />
+            </button>
+          )}
+        </div>
+
+        {/* Group switch */}
+        <div style={{ marginTop: 14, paddingBottom: 14, display: "flex", gap: 6 }}>
+          {(["urgency", "category", "all"] as Grouping[]).map(g => (
+            <button key={g} onClick={() => setGrouping(g)} style={{
+              all: "unset", cursor: "pointer", padding: "5px 12px", borderRadius: 999,
+              fontSize: 12.5, fontWeight: 600, letterSpacing: 0.1, whiteSpace: "nowrap",
+              color: grouping === g ? "var(--accent-ink)" : "var(--muted)",
+              background: grouping === g ? "var(--accent)" : "var(--surface-2)",
+              transition: "background .12s ease, color .12s ease",
+            }}>
+              {g === "urgency" ? "Urgency" : g === "category" ? "Category" : "All items"}
+            </button>
+          ))}
+        </div>
+        <div style={{ height: 1, background: "var(--border)", margin: "0 -20px" }} />
       </div>
 
-      <main className="flex-1 px-4 pb-8 space-y-3">
+      {/* List */}
+      <main style={{ flex: 1, paddingBottom: 100 }}>
         {loading && (
-          <p className="text-center text-gray-600 text-sm pt-12">Loading...</p>
+          <p style={{ textAlign: "center", color: "var(--faint)", fontSize: 14, paddingTop: 64 }}>Loading…</p>
         )}
         {!loading && filtered.length === 0 && (
-          <p className="text-center text-gray-600 text-sm pt-12">
-            {filter ? "No items match." : "Your pantry is empty — add something!"}
-          </p>
-        )}
-        {filtered.map((item) => (
-          <div key={item.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1 min-w-0">
-                <Link href={`/edit/${item.id}`} className="font-medium text-gray-900 truncate hover:text-green-700 transition-colors block">
-                  {item.packaging ? PACKAGING_EMOJI[item.packaging] + " " : ""}
-                  {item.name}
-                </Link>
-                {item.brand && (
-                  <p className="text-xs text-gray-600 mt-0.5">{item.brand}</p>
-                )}
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {item.category && (
-                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
-                      {item.category}
-                    </span>
-                  )}
-                  {item.packaging && (
-                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full capitalize">
-                      {item.packaging}
-                    </span>
-                  )}
-                  {item.quantity > 1 && (
-                    <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
-                      x{item.quantity}
-                    </span>
-                  )}
-                  {item.expiryDate && <ExpiryBadge dateStr={item.expiryDate} />}
-                </div>
-              </div>
-              <div className="flex gap-2 shrink-0">
-                <button
-                  onClick={() => consume(item.id)}
-                  title="Mark as consumed"
-                  className="text-green-600 hover:bg-green-50 rounded-xl p-2 transition-colors text-lg"
-                >
-                  ✓
-                </button>
-                <button
-                  onClick={() => remove(item.id)}
-                  title="Delete"
-                  className="text-red-400 hover:bg-red-50 rounded-xl p-2 transition-colors text-lg"
-                >
-                  ✕
-                </button>
-              </div>
+          <div style={{ textAlign: "center", padding: "64px 20px", color: "var(--muted)" }}>
+            <div style={{ fontWeight: 700, fontSize: 20, color: "var(--ink)", marginBottom: 6 }}>
+              {filter ? "Nothing found" : "Pantry is empty"}
             </div>
+            <div style={{ fontSize: 14 }}>
+              {filter ? `No items match "${filter}".` : "Tap Add item to get started."}
+            </div>
+          </div>
+        )}
+        {groups.map(g => (
+          <div key={g.key}>
+            {g.label && <GroupHeader label={g.label} sub={(g as { sub?: string }).sub} count={g.count} />}
+            {!g.label && <div style={{ height: 12 }} />}
+            {g.items.map(item => (
+              <ItemRow
+                key={item.id}
+                item={item}
+                onConsume={() => consume(item.id)}
+                onDelete={() => remove(item.id)}
+                leaving={leavingId === item.id}
+              />
+            ))}
           </div>
         ))}
       </main>
+
+      <Toast msg={toast} />
     </div>
   );
 }

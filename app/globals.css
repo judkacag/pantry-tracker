@@ -1,26 +1,52 @@
 @import "tailwindcss";
 
+:root, html, body {
+  color-scheme: light only;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg:          #FFFFFF;
+  --surface-2:   #F4F4F6;
+  --ink:         #17171B;
+  --muted:       #6C6C74;
+  --faint:       #AAAAB2;
+  --accent:      #2D5CB0;
+  --accent-ink:  #FFFFFF;
+  --accent-soft: #E1E8F6;
+  --border:      rgba(20,20,28,0.09);
+  --chip-bg:     #F0F0F2;
+  --chip-ink:    #5A5A62;
+  --shadow:      0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.05);
+  --green:       #3A8048;
+  --green-bg:    #E4F0E5;
+  --amber:       #B07A12;
+  --amber-bg:    #F6ECCF;
+  --red:         #C0531F;
+  --red-bg:      #F8E2D4;
+  --field-bg:    #F5F5F7;
+  --radius:      14px;
+  --radius-sm:   12px;
+  --radius-pill: 999px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; padding: 0; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Jost', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+input::placeholder { color: var(--faint); opacity: 1; }
+input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0.45; cursor: pointer; }
+::-webkit-scrollbar { width: 0; height: 0; }
+
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+.screen-in { animation: screenIn .25s cubic-bezier(.2,0,0,1); }

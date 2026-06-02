@@ -1,8 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Pantry Tracker",
@@ -11,18 +8,19 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#16a34a",
+  themeColor: "#2D5CB0",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="de" className="h-full">
-      <body className={`${inter.className} min-h-full bg-gray-50 text-gray-900`}>
-        <div className="max-w-lg mx-auto min-h-full flex flex-col">
+    <html lang="de" style={{ height: "100%", colorScheme: "light" }}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
+      <body style={{ height: "100%", margin: 0 }}>
+        <div style={{ maxWidth: 480, margin: "0 auto", minHeight: "100%", display: "flex", flexDirection: "column" }}>
           {children}
         </div>
       </body>
