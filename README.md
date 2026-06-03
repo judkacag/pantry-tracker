@@ -27,6 +27,7 @@ I kept throwing out food that had quietly expired at the back of the cupboard. I
 | **Search & filter** | Instant search + multi-select filter by urgency level and category |
 | **Group views** | Switch between Urgency, Category, and All items |
 | **PWA** | Install to your home screen — works like a native app, no App Store needed |
+| **Pantry AI chat** | Floating chat widget — paste a recipe link and it tells you what you already have, with expiry-first suggestions for each ingredient |
 
 ---
 
@@ -34,10 +35,11 @@ I kept throwing out food that had quietly expired at the back of the cupboard. I
 
 <img src="docs/architecture.svg" width="100%"/>
 
-Three zones:
+Four zones:
 - **Your phone** — browser PWA with camera barcode scanning (`html5-qrcode`) and manual entry fallback
-- **Next.js app** — API routes for items and product lookup, SQLite database, all logic stays local
+- **Next.js app** — API routes for items, product lookup, and AI chat; SQLite database; all logic stays local
 - **Open Food Facts** — free, open product database; returns name, brand, category, packaging type, pack size, nutri-score, dietary labels, and product photo. No API key required.
+- **Groq (LLM)** — powers the Pantry AI chat widget; fetches recipe pages, extracts ingredients, matches against the live pantry with expiry-first logic. Free tier at [console.groq.com](https://console.groq.com).
 
 ---
 
@@ -50,6 +52,7 @@ Three zones:
 | Barcode | [html5-qrcode](https://github.com/mebjas/html5-qrcode) | Runs in the browser, no native app needed |
 | Product data | [Open Food Facts](https://world.openfoodfacts.org) | Free, open, strong EU coverage |
 | Database | SQLite via [Prisma v7](https://www.prisma.io) + libsql | Zero-config, file-based, easy to migrate |
+| AI chat | [Groq](https://groq.com) + Llama 3.3 70B | Free tier, fast inference, no EU quota issues |
 | Font | [Jost](https://fonts.google.com/specimen/Jost) | Clean and readable on mobile |
 
 ---
@@ -75,10 +78,14 @@ npm install
 cp .env.example .env
 ```
 
-The only required variable is the database path — no external services or API keys needed.
+Copy the example and fill in your values:
 
 ```env
 DATABASE_URL="file:./prisma/dev.db"
+
+# Optional — enables the Pantry AI chat widget
+# Free tier: https://console.groq.com
+GROQ_API_KEY=
 ```
 
 ### 3. Set up the database
@@ -110,6 +117,7 @@ Open [http://localhost:3000](http://localhost:3000). On mobile, connect to the s
 - [x] Group views: urgency, category, all items
 - [x] PWA / installable on mobile
 - [x] Pantry + fridge as separate locations
+- [x] Pantry AI chat — paste a recipe link, get a ✅/❌ ingredient check against your pantry
 - [ ] Photo / OCR scanning of expiry dates (so you don't have to type the date)
 - [ ] Shopping suggestions when stock is running low
 - [ ] Shared household access (multi-user)

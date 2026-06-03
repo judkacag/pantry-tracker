@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { PantryChat } from "@/components/PantryChat";
 
 export const metadata: Metadata = {
   title: "Pantry Tracker",
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div style={{ maxWidth: 480, margin: "0 auto", minHeight: "100%", display: "flex", flexDirection: "column" }}>
           {children}
         </div>
+        <PantryChat />
       </body>
     </html>
   );

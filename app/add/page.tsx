@@ -47,12 +47,11 @@ export default function AddPage() {
       if (stopped) return;
       const scanner = new Html5Qrcode("qr-reader");
       scannerInstanceRef.current = scanner;
-      scanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 150 } },
-        (decoded) => { scanner.stop().then(() => { setScanning(false); lookupBarcode(decoded); }); },
-        undefined
-      ).catch(() => { setScanning(false); });
+      const onDecoded = (decoded: string) => { scanner.stop().then(() => { setScanning(false); lookupBarcode(decoded); }); };
+      const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+      scanner.start({ facingMode: "environment" }, config, onDecoded, undefined)
+        .catch(() => scanner.start({ facingMode: "user" }, config, onDecoded, undefined))
+        .catch(() => { setScanning(false); });
     });
 
     return () => {
